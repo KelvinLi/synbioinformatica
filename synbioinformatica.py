@@ -109,7 +109,7 @@ class LCS:
 						sp.depth = r.depth + pp - j + 1
 						if j<len(str1)<i and r.depth>self.deepest[0]:
 							self.deepest = r.depth,j-1
-				elif s.has_key(t):
+				elif t in s:
 					break
 				else:
 					r = s
@@ -263,7 +263,7 @@ def PCR(primer1DNA, primer2DNA, templateDNA):
 			else:
 				raise PrimerError((primer1DNA.sequence, primer2DNA.sequence),template,'forward primer must anneal upstream of the reverse.')
 		return AssemblyTreeRelationships(inputTuple, parent, fwdTM, revTM)
-	except PrimerError, error:
+	except PrimerError as error:
 		RaisePrimerError(inputTuple, error)
 
 # Description: reverseComplement() is case preserving reverse complementation of nucleotide sequences
