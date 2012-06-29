@@ -565,7 +565,7 @@ def Digest(InputDNA, Enzymes):
 			bestBuffer = 'Buffer EcoRI' 
 		frag.setTimeStep(1)
 		frag.addMaterials([bestBuffer,'ddH20'])
-		frag.instructions = 'Digest ('+InputDNA.name+') with '+enzNames+' at '+incubationTemp+'C in '+bestBuffer+' for 1 hour.'
+		frag.instructions = 'Digest ('+InputDNA.name+') with '+enzNames+' at '+str(incubationTemp)+'C in '+bestBuffer+' for 1 hour.'
 	return frags
 
 class Overhang(object):
@@ -711,11 +711,11 @@ def ToRegex(site, name):
 
 # Description: restrictionEnzyme class encapsulates information about buffers, overhangs, incubation / inactivation, end distance, etc.
 class restrictionEnzyme(object):
-	def __init__(self,name="", buffer1="", buffer2="", buffer3="", buffer4="", bufferecori="", heatinact="", incubatetemp="", recognitionsite="",distance=""):
+	def __init__(self,name="", buffer1="", buffer2="", buffer3="", buffer4="", bufferecori="", heatinact="", incubatetemp=0., recognitionsite="",distance=""):
 		self.name = name
 		self.buffer_activity =[buffer1, buffer2, buffer3, buffer4, bufferecori]
 		self.inactivate_temp = heatinact
-		self.incubate_temp = incubatetemp
+		self.incubate_temp = float(incubatetemp)
 		#human-readable recognition site
 		self.recognition_site = recognitionsite
 		self.endDistance = distance
