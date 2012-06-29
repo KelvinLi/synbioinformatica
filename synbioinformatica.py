@@ -51,11 +51,11 @@ def translate( sequence ):
 # Read in all enzymes:
 def EnzymeDictionary():
 	EnzymeDictionary = {}
-	fh = open('REases.tsv', 'rU')
-	for line in fh:
-		card = line.rstrip().split('\t')
-		card[0] = re.sub(r'\-','_',card[0])
-		EnzymeDictionary[card[0]] = restrictionEnzyme(card[0],card[1],card[2],card[3],card[4],card[5],card[6],card[7],card[8],card[9])
+	with open('REases.tsv', 'rU') as fh:
+		for line in fh:
+			card = line.rstrip().split('\t')
+			card[0] = re.sub(r'\-', '_', card[0])
+			EnzymeDictionary[card[0]] = restrictionEnzyme(*card)
 	return EnzymeDictionary
 
 # Description: Suffix Tree implementation for the purpose of PCR Longest Common Substring identification
