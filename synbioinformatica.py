@@ -290,7 +290,7 @@ def primerTm(sequence):
 	molarMagnesium = milliMolarMagnesium/1000
 	molarPrimerTotal = Decimal(nanoMolarPrimerTotal)/Decimal(1000000000)
 	re.sub(r'\s','', sequence)
- 	return nearestNeighborTmNonDegen(sequence, molarSalt, molarPrimerTotal, molarMagnesium)
+	return nearestNeighborTmNonDegen(sequence, molarSalt, molarPrimerTotal, molarMagnesium)
 
 def primerTmsimple(sequence):
   	return 64.9+41*(GCcontent(sequence)*len(sequence) - 16.4)/len(sequence)
@@ -401,7 +401,7 @@ def Digest(InputDNA, Enzymes):
 	for enzyme in Enzymes:
 		nameList.append(enzyme.name)
 		enzNames = enzNames+enzyme.name+', '
-		incubationTemp = max(incubationTemp,enzyme.incubate_temp)
+		incubationTemp = max(incubationTemp, enzyme.incubate_temp)
 	enzNames = enzNames[:-2]
 	if InputDNA.topology == "linear":	
 		# Initialize indices array with start and end indices of the linear fragment
@@ -731,10 +731,10 @@ class restrictionEnzyme(object):
 		not_completed = 1
 		for m in hasNum.finditer(recognitionsite):
 			(top, bottom) = m.group().split('/')
-		  	self.top_strand_offset = int(top)
-		  	self.bottom_strand_offset = int(bottom)
-		  	self.reach = True
-		  	not_completed = 0
+			self.top_strand_offset = int(top)
+			self.bottom_strand_offset = int(bottom)
+			self.reach = True
+			not_completed = 0
 		p = re.compile("/")
 		for m in p.finditer(recognitionsite):
 			if not_completed:
@@ -1103,8 +1103,8 @@ def GelAndZymoPurify(inputDNAs, strategy):
 	sizeTuples = []
 	for DNA in inputDNAs:
 		fragSize = len(DNA.sequence)
-		sizeTuples.append((fragSize,DNA))
-	if isinstance( strategy, str):
+		sizeTuples.append((fragSize, DNA))
+	if isinstance(strategy, str):
 		if strategy == 'L':
 			sizeTuples.sort(reverse=True)
 			n = 0
@@ -1233,7 +1233,7 @@ def HaspUC(seq):
 def HasAAFeature(regex, DNAseq):
 	#must be uppercase, checks all six possibilities, fwd, rev x 3 frames
 	seq = DNAseq
-        retval = bool( re.search(regex, translate(seq.upper() )) ) | bool( re.search(regex,translate(seq[1:].upper() ) ) ) |  bool( re.search(regex,translate(seq[2:].upper() ) ) )
+	retval = bool( re.search(regex, translate(seq.upper() )) ) | bool( re.search(regex,translate(seq[1:].upper() ) ) ) |  bool( re.search(regex,translate(seq[2:].upper() ) ) )
 	seq = reverseComplement(seq)
 	retval = retval | bool( re.search(regex, translate(seq.upper() )) ) | bool( re.search(regex,translate(seq[1:].upper() ) ) ) |  bool( re.search(regex,translate(seq[2:].upper() ) ) )
 	return retval
