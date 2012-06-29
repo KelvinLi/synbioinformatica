@@ -1106,7 +1106,7 @@ def GelAndZymoPurify(inputDNAs, strategy):
 		sizeTuples.append((fragSize, DNA))
 	if isinstance(strategy, str):
 		if strategy == 'L':
-			sizeTuples.sort(reverse=True)
+			sizeTuples.sort(key=lambda x: x[0], reverse=True)
 			n = 0
 			currentTuple = sizeTuples[n]
 			largestSize = currentTuple[n]
