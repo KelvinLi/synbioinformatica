@@ -283,7 +283,7 @@ def Complement(sequence):
 # Implemented by Tim Hsaiu in JavaScript, adapted to Python by Nima Emami
 # Based on Santa Lucia et. al. papers
 def primerTm(sequence):
-	milliMolarSalt = 50
+	milliMolarSalt = 50.
 	milliMolarMagnesium = 1.5
 	nanoMolarPrimerTotal = 200
 	molarSalt = milliMolarSalt/1000
