@@ -197,8 +197,8 @@ def PCRErrorHandling(InputTuple):
 # Description: RaisePrimerError() function provides context specific warnings to user about PCR failure as a result of primer design
 def RaisePrimerError(inputTuple, error):
 	(primer1DNA, primer2DNA, templateDNA) = inputTuple
-	print 'EXCEPTION: For PCR of template ('+templateDNA.name+') with primers ('+primer1DNA.name+', '+primer2DNA.name+'), '+error.msg
-	print 'Error primer: '+error.primer[:-1]
+	print('EXCEPTION: For PCR of template ('+templateDNA.name+') with primers ('+primer1DNA.name+', '+primer2DNA.name+'), '+error.msg)
+	print('Error Primer: '+error.primer[:-1])
 
 # Description: AssemblyTreeRelationships() function assigns relationships for PCR inputs and PCR product for assembly tree purposes
 def AssemblyTreeRelationships(inputTuple, parent, fwdTM, revTM):
@@ -414,14 +414,14 @@ def Digest(InputDNA, Enzymes):
 		for site in sites:
 			# WARNING: end proximity for linear fragments exception
 			if InputDNA.topology == 'linear' and int(site[0]) - int(enzyme.endDistance) < 0 or int(site[1]) + int(enzyme.endDistance) > totalLength:
-				print 'WARNING: end proximity for '+enzyme.name+' restriction site at indices '+str(site[0]%totalLength)+','+str(site[1]%totalLength)+' for input with length '+str(totalLength)
+				print('WARNING: end proximity for '+enzyme.name+' restriction site at indices '+str(site[0]%totalLength)+','+str(site[1]%totalLength)+' for input with length '+str(totalLength))
 				if InputDNA.topology == 'linear' and site[2] == 'antisense' and site[1] - max(enzyme.bottom_strand_offset,enzyme.top_strand_offset) < 0:
-					print 'WARNING: restriction cut site for '+enzyme.name+' with recognition indices '+str(site[0]%totalLength)+','+str(site[1]%totalLength)+' out of bounds for input with length '+str(totalLength)
+					print('WARNING: restriction cut site for '+enzyme.name+' with recognition indices '+str(site[0]%totalLength)+','+str(site[1]%totalLength)+' out of bounds for input with length '+str(totalLength))
 				else:
 					pass
 			# WARNING: restriction index out of bounds exception
 			elif InputDNA.topology == 'linear' and site[2] == 'antisense' and site[1] - max(enzyme.bottom_strand_offset,enzyme.top_strand_offset) < 0:
-				print 'WARNING: restriction cut site for '+enzyme.name+' with recognition indices '+str(site[0]%totalLength)+','+str(site[1]%totalLength)+' out of bounds for input with length '+str(totalLength)
+				print('WARNING: restriction cut site for '+enzyme.name+' with recognition indices '+str(site[0]%totalLength)+','+str(site[1]%totalLength)+' out of bounds for input with length '+str(totalLength))
 				pass
 			else: 
 				site = site + (enzyme, )
@@ -441,7 +441,7 @@ def Digest(InputDNA, Enzymes):
 				if currentIndex[0] == len(InputDNA.sequence):
 					pass
 				else:
-					print 'WARNING: overlapping restriction sites '+currentTuple[3].name+' (indices '+str(currentTuple[0])+','+str(currentTuple[1])+') and '+nextTuple[3].name+' (indices '+str(nextTuple[0])+','+str(nextTuple[1])+')'
+					print('WARNING: overlapping restriction sites '+currentTuple[3].name+' (indices '+str(currentTuple[0])+','+str(currentTuple[1])+') and '+nextTuple[3].name+' (indices '+str(nextTuple[0])+','+str(nextTuple[1])+')')
 					n = n + 1
 			n = n + 1
 		except:
@@ -496,7 +496,7 @@ def Digest(InputDNA, Enzymes):
 			if n == -1:
 				digested = DNA(InputDNA.sequence[currentStart:]+InputDNA.sequence[:digEnd],'digest','Digest of '+InputDNA.name+' with '+enzNames)
 			else:
-				print 'WARNING: restriction sites for '+currentTuple[3].name+' ('+str(currentTuple[0])+','+str(currentTuple[1])+') and '+nextTuple[3].name+' ('+str(nextTuple[0])+','+str(nextTuple[1])+') contain mutually interfering overhangs -- fragment discarded.'
+				print('WARNING: restriction sites for '+currentTuple[3].name+' ('+str(currentTuple[0])+','+str(currentTuple[1])+') and '+nextTuple[3].name+' ('+str(nextTuple[0])+','+str(nextTuple[1])+') contain mutually interfering overhangs -- fragment discarded.')
 				continue
 		else:
 			digested = DNA(InputDNA.sequence[currentStart:digEnd],'digest','Digest of '+InputDNA.name+' with '+enzNames)
@@ -646,9 +646,9 @@ class DNA(object):
 					trExtra = self.topRightOverhang.sequence
 				if BR:
 					brExtra = self.bottomRightOverhang.sequence
-				print "\t"+self.topLeftOverhang.sequence+' '*len(self.bottomLeftOverhang.sequence)+self.sequence[:4]+'.'*3+'['+str(len(self.sequence)-8)+'bp]'+'.'*3+self.sequence[len(self.sequence)-4:]+trExtra
-				print "\t"+' '*len(self.topLeftOverhang.sequence)+'|'*4+' '*(10+len(str(len(self.sequence)-8)))+'|'*4
-				print "\t"+' '*len(self.topLeftOverhang.sequence)+self.bottomLeftOverhang.sequence+reverseComplement(self.sequence[:4])+'.'*(10+len(str(len(self.sequence)-8)))+reverseComplement(self.sequence[len(self.sequence)-4:])+brExtra
+				print("\t"+self.topLeftOverhang.sequence+' '*len(self.bottomLeftOverhang.sequence)+self.sequence[:4]+'.'*3+'['+str(len(self.sequence)-8)+'bp]'+'.'*3+self.sequence[len(self.sequence)-4:]+trExtra)
+				print("\t"+' '*len(self.topLeftOverhang.sequence)+'|'*4+' '*(10+len(str(len(self.sequence)-8)))+'|'*4)
+				print("\t"+' '*len(self.topLeftOverhang.sequence)+self.bottomLeftOverhang.sequence+reverseComplement(self.sequence[:4])+'.'*(10+len(str(len(self.sequence)-8)))+reverseComplement(self.sequence[len(self.sequence)-4:])+brExtra)
 			else:
 				trExtra = ''
 				brExtra = ''
@@ -656,18 +656,18 @@ class DNA(object):
 					trExtra = self.topRightOverhang.sequence
 				if BR:
 					brExtra = self.bottomRightOverhang.sequence
-				print "\t"+self.topLeftOverhang.sequence+' '*len(self.bottomLeftOverhang.sequence)+self.sequence+trExtra
-				print "\t"+' '*len(self.topLeftOverhang.sequence)+'|'*len(self.sequence)
-				print "\t"+' '*len(self.topLeftOverhang.sequence)+self.bottomLeftOverhang.sequence+reverseComplement(self.sequence)+brExtra
+				print("\t"+self.topLeftOverhang.sequence+' '*len(self.bottomLeftOverhang.sequence)+self.sequence+trExtra)
+				print("\t"+' '*len(self.topLeftOverhang.sequence)+'|'*len(self.sequence))
+				print("\t"+' '*len(self.topLeftOverhang.sequence)+self.bottomLeftOverhang.sequence+reverseComplement(self.sequence)+brExtra)
 		else:
 			if len(self.sequence) > 8:
-				print "\t"+self.sequence[:4]+'.'*3+'['+str(len(self.sequence)-8)+'bp]'+'.'*3+self.sequence[len(self.sequence)-4:]
-				print "\t"+'|'*4+' '*(10+len(str(len(self.sequence)-8)))+'|'*4
-				print "\t"+reverseComplement(self.sequence[:4])+'.'*(10+len(str(len(self.sequence)-8)))+reverseComplement(self.sequence[len(self.sequence)-4:])
+				print("\t"+self.sequence[:4]+'.'*3+'['+str(len(self.sequence)-8)+'bp]'+'.'*3+self.sequence[len(self.sequence)-4:])
+				print("\t"+'|'*4+' '*(10+len(str(len(self.sequence)-8)))+'|'*4)
+				print("\t"+reverseComplement(self.sequence[:4])+'.'*(10+len(str(len(self.sequence)-8)))+reverseComplement(self.sequence[len(self.sequence)-4:]))
 			else:
-				print "\t"+self.sequence
-				print "\t"+'|'*len(self.sequence)
-				print "\t"+reverseComplement(self.sequence)
+				print("\t"+self.sequence)
+				print("\t"+'|'*len(self.sequence))
+				print("\t"+reverseComplement(self.sequence))
 		return 0
 	
 # Description: BaseExpand() for regex generation, taken from BioPython
@@ -742,7 +742,7 @@ class restrictionEnzyme(object):
 				self.bottom_strand_offset =  len(recognitionsite) - 1 - self.top_strand_offset	
 
 	def prettyPrint(self):
-		print "Name: ", self.name, "Recognition Site: ", self.recognition_site
+		print("Name: ", self.name, "Recognition Site: ", self.recognition_site)
 	def find_sites(self, DNA):
 		seq = DNA.sequence
 		(fwd, rev) = self.compsite.split('|')
@@ -876,7 +876,7 @@ def Ligate(inputDNAs):
 	for fragment in inputDNAs:
 		(TL,TR,BL,BR) = SetFlags(fragment)
 		if fragment.DNAclass != 'digest':
-			print 'WARNING: For ligation reaction, invalid input molecule removed -- ligation input DNA objects must be of class \'digest\'.'
+			print('WARNING: For ligation reaction, invalid input molecule removed -- ligation input DNA objects must be of class \'digest\'.')
 		elif TL+TR+BL+BR == 1:
 			pass
 		elif TL+TR+BL+BR == 0:
@@ -1016,7 +1016,7 @@ def Ligate(inputDNAs):
 # Description: ZymoPurify() function takes a list of DNA objects and filters out < 300 bp DNA's
 def ZymoPurify(inputDNAs):
 	if len(inputDNAs) == 0:
-		print 'WARNING: Zymo purification function passed empty input list -- will return empty output'
+		print('WARNING: Zymo purification function passed empty input list -- will return empty output')
 		return inputDNAs
 	outputBands = []
 	sizeTuples = []
@@ -1053,7 +1053,7 @@ def ZymoPurify(inputDNAs):
 # Description: ShortFragmentCleanup() function takes a list of DNA objects and filters out < 50 bp DNA's
 def ShortFragmentCleanup(inputDNAs):
 	if len(inputDNAs) == 0:
-		print 'WARNING: ShortFragmentCleanup function passed empty input list -- will return empty output'
+		print('WARNING: ShortFragmentCleanup function passed empty input list -- will return empty output')
 		return inputDNAs
 	outputBands = []
 	sizeTuples = []
@@ -1094,7 +1094,7 @@ def GelAndZymoPurify(inputDNAs, strategy):
 	shortFlag = False
 	lostFlag = False
 	if len(inputDNAs) == 0:
-		print "WARNING: Gel purification with strategy \'"+strategy+"\' passed empty input list -- will return empty output"
+		print("WARNING: Gel purification with strategy \'"+strategy+"\' passed empty input list -- will return empty output")
 		return inputDNAs
 	elif len(inputDNAs) == 1:
 		return inputDNAs
@@ -1123,7 +1123,7 @@ def GelAndZymoPurify(inputDNAs, strategy):
 					shortFlag = True
 				interBands.append(currentTuple[1])
 			if len(interBands) > 1:
-				print "WARNING: large fragment purification resulted in purification of multiple, possibly unintended distinct DNAs."
+				print("WARNING: large fragment purification resulted in purification of multiple, possibly unintended distinct DNAs.")
 		elif strategy == 'S':
 			sizeTuples.sort()
 			n = 0
@@ -1142,7 +1142,7 @@ def GelAndZymoPurify(inputDNAs, strategy):
 					shortFlag = True
 				interBands.append(currentTuple[1])
 			if len(interBands) > 1:
-				print "WARNING: small fragment purification resulted in purification of multiple, possibly unintended distinct DNAs."
+				print("WARNING: small fragment purification resulted in purification of multiple, possibly unintended distinct DNAs.")
 	elif isinstance( strategy, ( int, long ) ):
 		sizeTuples.sort(reverse=True)
 		currentTuple = sizeTuples[0]
@@ -1163,16 +1163,16 @@ def GelAndZymoPurify(inputDNAs, strategy):
 				shortFlag = True
 			interBands.append(currentTuple[1])
 		if len(interBands) == 0:
-			print "WARNING: For gel purification with strategy \'"+strategy+"\', no digest bands present in given range, with purification yielding zero DNA products."
+			print("WARNING: For gel purification with strategy \'"+strategy+"\', no digest bands present in given range, with purification yielding zero DNA products.")
 		elif len(interBands) > 1:
-			print "WARNING: Fragment purification in range of band size '"+str(strategy)+"' resulted in purification of multiple, possibly unintended distinct DNAs."
+			print("WARNING: Fragment purification in range of band size '"+str(strategy)+"' resulted in purification of multiple, possibly unintended distinct DNAs.")
 	if len(interBands) == 0:
 		if lostFlag:
-			print "WARNING: Purification with given strategy \'"+strategy+"\' returned short fragments (< 50 bp) that were lost. Returning empty products list."
-		print "WARNING: Purification with given strategy '"+strategy+"' yielded zero products. Returning empty products list."
+			print("WARNING: Purification with given strategy \'"+strategy+"\' returned short fragments (< 50 bp) that were lost. Returning empty products list.")
+		print("WARNING: Purification with given strategy '"+strategy+"' yielded zero products. Returning empty products list.")
 	else:
 		if lostFlag:
-			print "WARNING: Purification with given strategy \'"+strategy+"\' returned at least one short fragment (< 50 bp) that was lost. Returning remaining products."
+			print("WARNING: Purification with given strategy \'"+strategy+"\' returned at least one short fragment (< 50 bp) that was lost. Returning remaining products.")
 			for band in interBands:
 				parentBand = band.clone()
 				parentBand.setChildren((band,))
@@ -1182,7 +1182,7 @@ def GelAndZymoPurify(inputDNAs, strategy):
 				parentBand.instructions = 'Gel purify ('+band.name+'), followed by short fragment cleanup.'
 				outputBands.append(parentBand)
 		elif shortFlag:
-			print "WARNING: Purification with given strategy \'"+strategy+"\' yielded short fragments (< 300 bp). Returning short fragment cleanup products."
+			print("WARNING: Purification with given strategy \'"+strategy+"\' yielded short fragments (< 300 bp). Returning short fragment cleanup products.")
 			for band in interBands:
 				parentBand = band.clone()
 				parentBand.setChildren((band,))
@@ -1322,14 +1322,14 @@ def TransformPlateMiniprep(DNAs, strain, selection_antibiotic):
 				parent.setTimeStep(24)
 				parent.addMaterials(['Buffers P1,P2,N3,PB,PE','Miniprep column',resistance[:-1]+' LB agar plates','LB '+resistance[:-1]+' media'])
 				transformed.append(dna)	
-				print success_msg
+				print(success_msg)
 			else:
 				if not(newR):
-					print "WARNING: For transformation of "+dna.name+" into "+strain.name+", plasmid either doesn't have an antibiotic resistance or doesn't confer a new one on this strain"
+					print("WARNING: For transformation of "+dna.name+" into "+strain.name+", plasmid either doesn't have an antibiotic resistance or doesn't confer a new one on this strain")
 				if not(replicon_ok):
-					print "WARNING: For transformation of "+dna.name+" into "+strain.name+", plasmid replicon won't function in this strain"
+					print("WARNING: For transformation of "+dna.name+" into "+strain.name+", plasmid replicon won't function in this strain")
 				if not(no_existing_plasmid):
-					print "WARNING: For transformation of "+dna.name+" into "+strain.name+", transformed plasmid replicon competes with existing plasmid in strain"
+					print("WARNING: For transformation of "+dna.name+" into "+strain.name+", transformed plasmid replicon competes with existing plasmid in strain")
 	if len(transformed)<1:
-		print "WARNING: For transformation of "+dna.name+" into "+strain.name+", no DNAs successfully transformed. DNAs may be linear."
+		print("WARNING: For transformation of "+dna.name+" into "+strain.name+", no DNAs successfully transformed. DNAs may be linear.")
 	return transformed
