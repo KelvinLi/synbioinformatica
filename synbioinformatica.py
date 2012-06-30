@@ -15,8 +15,8 @@
 ######################################################################
 
 
-import sys, re, math
-from decimal import *
+import math
+import re
 
 # TODO: work on naming scheme
 # TODO: add more ORIs
@@ -371,20 +371,22 @@ def reverse(sequence):
 def Complement(sequence):
         return "".join([complement_alphabet.get(nucleotide, '') for nucleotide in sequence[0:]])
 
+### REVIEWER NOTE: I removed usage of Decimal and some int/int division. ###
+###                please check whether this is correct ###
 # Primer TM function suite: primerTm(), primerTmsimple(), get_55_primer(), nearestNeighborTmNonDegen(), getTerminalCorrectionsDsHash(),
 # getTerminalCorrectionsDhHash(), getDsHash(), getDhHash()
 # Implemented by Tim Hsaiu in JavaScript, adapted to Python by Nima Emami
 # Based on Santa Lucia et. al. papers
 def primerTm(sequence):
-    if sequence == '':
+    if not sequence:
         return 0
-    milliMolarSalt = 50
+    milliMolarSalt = 50.
     milliMolarMagnesium = 1.5
-    nanoMolarPrimerTotal = 200
-    molarSalt = milliMolarSalt/1000
-    molarMagnesium = milliMolarMagnesium/1000
-    molarPrimerTotal = Decimal(nanoMolarPrimerTotal)/Decimal(1000000000)
-    re.sub(r'\s','', sequence)
+    nanoMolarPrimerTotal = 200.
+    molarSalt = milliMolarSalt/10.**3
+    molarMagnesium = milliMolarMagnesium/10.**3
+    molarPrimerTotal = nanoMolarPrimerTotal/10.**9
+    re.sub(r"\s", "", sequence)
     return nearestNeighborTmNonDegen(sequence, molarSalt, molarPrimerTotal, molarMagnesium)
 
 def primerTmsimple(sequence):
