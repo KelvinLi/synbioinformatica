@@ -1,4 +1,19 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python -tt -3
+
+
+######################################################################
+### REVIEWER NOTE:                                                 ###
+###                   About Reviewer Notes                         ###
+###                                                                ###
+### Please remove all reviewer notes that I have inserted.         ###
+### Those that cannot be resolved immediately should be changed to ###
+### "TODO: <message>" comments.                                    ###
+###                                                                ###
+### To provide response comments, please use "REVIEWER NOTE" as I  ###
+### have.                                                          ###
+###                                                                ###
+######################################################################
+
 
 import sys, re, math
 from decimal import *
@@ -11,43 +26,66 @@ from decimal import *
 # TODO: for PCR and Sequencing, renormalize based on LCS
 # TODO: tutorials
 
-dna_alphabet = {'A':'A', 'C':'C', 'G':'G', 'T':'T',
-                                'R':'AG', 'Y':'CT', 'W':'AT', 'S':'CG', 'M':'AC', 'K':'GT',
-                                'H':'ACT', 'B':'CGT', 'V':'ACG', 'D':'AGT',
-                                'N':'ACGT',
-                                'a': 'a', 'c': 'c', 'g': 'g', 't': 't',
-                                'r':'ag', 'y':'ct', 'w':'at', 's':'cg', 'm':'ac', 'k':'gt',
-                                'h':'act', 'b':'cgt', 'v':'acg', 'd':'agt',
-                                'n':'acgt'}
+dna_alphabet = {
+'A':'A', 'C':'C', 'G':'G', 'T':'T',
+'R':'AG', 'Y':'CT', 'W':'AT', 'S':'CG', 'M':'AC', 'K':'GT',
+'H':'ACT', 'B':'CGT', 'V':'ACG', 'D':'AGT', 'N':'ACGT',
+'a': 'a', 'c': 'c', 'g': 'g', 't': 't',
+'r':'ag', 'y':'ct', 'w':'at', 's':'cg', 'm':'ac', 'k':'gt',
+'h':'act', 'b':'cgt', 'v':'acg', 'd':'agt',
+'n':'acgt'}
 
-complement_alphabet = {'A':'T', 'T':'A', 'C':'G', 'G':'C','R':'Y', 'Y':'R',
-                                              'W':'W', 'S':'S', 'M':'K', 'K':'M', 'H':'D', 'D':'H',
-                                              'B':'V', 'V':'B', 'N':'N','a':'t', 'c':'g', 'g':'c',
-                                              't':'a', 'r':'y', 'y':'r', 'w':'w', 's':'s','m':'k',
-                                              'k':'m', 'h':'d', 'd':'h', 'b':'v', 'v':'b', 'n':'n'}
+complement_alphabet = {
+'A':'T', 'T':'A', 'C':'G', 'G':'C','R':'Y', 'Y':'R',
+'W':'W', 'S':'S', 'M':'K', 'K':'M', 'H':'D', 'D':'H',
+'B':'V', 'V':'B', 'N':'N','a':'t', 'c':'g', 'g':'c',
+'t':'a', 'r':'y', 'y':'r', 'w':'w', 's':'s','m':'k',
+'k':'m', 'h':'d', 'd':'h', 'b':'v', 'v':'b', 'n':'n'}
 
 gencode = {
-        'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
-        'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
-        'AAC':'N', 'AAT':'N', 'AAA':'K', 'AAG':'K',
-        'AGC':'S', 'AGT':'S', 'AGA':'R', 'AGG':'R',
-        'CTA':'L', 'CTC':'L', 'CTG':'L', 'CTT':'L',
-        'CCA':'P', 'CCC':'P', 'CCG':'P', 'CCT':'P',
-        'CAC':'H', 'CAT':'H', 'CAA':'Q', 'CAG':'Q',
-        'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGT':'R',
-        'GTA':'V', 'GTC':'V', 'GTG':'V', 'GTT':'V',
-        'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A',
-        'GAC':'D', 'GAT':'D', 'GAA':'E', 'GAG':'E',
-        'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGT':'G',
-        'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S',
-        'TTC':'F', 'TTT':'F', 'TTA':'L', 'TTG':'L',
-        'TAC':'Y', 'TAT':'Y', 'TAA':'_', 'TAG':'_',
-        'TGC':'C', 'TGT':'C', 'TGA':'_', 'TGG':'W'}
+'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
+'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
+'AAC':'N', 'AAT':'N', 'AAA':'K', 'AAG':'K',
+'AGC':'S', 'AGT':'S', 'AGA':'R', 'AGG':'R',
+'CTA':'L', 'CTC':'L', 'CTG':'L', 'CTT':'L',
+'CCA':'P', 'CCC':'P', 'CCG':'P', 'CCT':'P',
+'CAC':'H', 'CAT':'H', 'CAA':'Q', 'CAG':'Q',
+'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGT':'R',
+'GTA':'V', 'GTC':'V', 'GTG':'V', 'GTT':'V',
+'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A',
+'GAC':'D', 'GAT':'D', 'GAA':'E', 'GAG':'E',
+'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGT':'G',
+'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S',
+'TTC':'F', 'TTT':'F', 'TTA':'L', 'TTG':'L',
+'TAC':'Y', 'TAT':'Y', 'TAA':'_', 'TAG':'_',
+'TGC':'C', 'TGT':'C', 'TGA':'_', 'TGG':'W'}
+
+def with_prev(iterable):
+    """
+    utility function
+    list(with_prev(range(4))) --> [(0, 1), (1, 2), (2, 3)]
+    """
+    hold = ()
+    for new in iterable:
+        try:
+            old = hold[0]
+        except IndexError:
+            continue
+        else:
+            yield (old, new)
+        finally:
+            hold = (new,)
+
+def lreduce(func, iterable):
+    """
+    like functools.reduce, but reduces on the "left"
+    """
+    functools.reduce(lambda x,y: func(y,x), iterable)
 
 # Description: converts DNA string to amino acid string
 def translate( sequence ):
-        """Return the translated protein from 'sequence' assuming +1 reading frame"""
-        return ''.join([gencode.get(sequence[3*i:3*i+3],'X') for i in range(len(sequence)//3)])
+    """Return the translated protein from 'sequence' assuming +1 reading frame"""
+    return ''.join([gencode.get(sequence[3*i:3*i+3],'X') for i in range(len(sequence)//3)])
 
 # Description: read in all enzymes from REase tsv into dict EnzymeDictionary
 def EnzymeDictionary():
@@ -465,30 +503,53 @@ def initDigest(InputDNA, Enzymes):
         indices = [(0,0,'',dummy), (totalLength,0,'',dummy)]
     return (indices, frags, sites, totalLength, enzNames, incubationTemp, nameList, filtered)
 
-# Description: finds restriction sites for given Enzymes in given InputDNA molecule 
 def restrictionSearch(Enzymes, InputDNA, indices, totalLength):
+    """
+    Finds restriction sites for given Enzymes in given InputDNA molecule 
+    """
     for enzyme in Enzymes:
         sites = enzyme.find_sites(InputDNA)
         for site in sites:
             # WARNING: end proximity for linear fragments exception
-            if InputDNA.topology == 'linear' and int(site[0]) - int(enzyme.endDistance) < 0 or int(site[1]) + int(enzyme.endDistance) > totalLength:
-                print '\n*Digest Warning*: end proximity for '+enzyme.name+' restriction site at indices '+str(site[0]%totalLength)+','+str(site[1]%totalLength)+' for input '+InputDNA.name+' (length '+str(totalLength)+')\n'
-                if InputDNA.topology == 'linear' and site[2] == 'antisense' and site[1] - max(enzyme.bottom_strand_offset,enzyme.top_strand_offset) < 0:
-                    print '\n*Digest Warning*: restriction cut site for '+enzyme.name+' with recognition indices '+str(site[0]%totalLength)+','+str(site[1]%totalLength)+' out of bounds for input '+InputDNA.name+' (length '+str(totalLength)+')\n'
-                else:
-                    pass
+            if (InputDNA.topology == "linear" and
+                int(site[0]) < int(enzyme.endDistance) or
+                int(site[1]) + int(enzyme.endDistance) > totalLength):
+                print("\n*Digest Warning*: end proximity for "+enzyme.name+
+                      " restriction site at indices "+
+                      str(site[0]%totalLength)+","+str(site[1]%totalLength)+
+                      " for input "+InputDNA.name+
+                      " (length "+str(totalLength)+")\n")
+                if (InputDNA.topology == 'linear' and
+                    site[2] == 'antisense' and
+                    site[1] < max(enzyme.bottom_strand_offset,
+                                  enzyme.top_strand_offset)):
+                    print("\n*Digest Warning*: restriction cut site for "+
+                          enzyme.name+" with recognition indices "+
+                          str(site[0]%totalLength)+","+
+                          str(site[1]%totalLength)+
+                          " out of bounds for input "+InputDNA.name+
+                          " (length "+str(totalLength)+")\n")
             # WARNING: restriction index out of bounds exception
-            elif InputDNA.topology == 'linear' and site[2] == 'antisense' and site[1] - max(enzyme.bottom_strand_offset,enzyme.top_strand_offset) < 0:
-                print '\n*Digest Warning*: restriction cut site for '+enzyme.name+' with recognition indices '+str(site[0]%totalLength)+','+str(site[1]%totalLength)+' out of bounds for input '+InputDNA.name+' (length '+str(totalLength)+')\n'
+            elif (InputDNA.topology == "linear" and
+                  site[2] == "antisense" and
+                  site[1] < max(enzyme.bottom_strand_offset,
+                                enzyme.top_strand_offset)):
+                print("\n*Digest Warning*: restriction cut site for "+
+                      enzyme.name+" with recognition indices "+
+                      str(site[0]%totalLength)+","+str(site[1]%totalLength)+
+                      " out of bounds for input "+InputDNA.name+
+                      " (length "+str(totalLength)+")\n")
             else: 
-                site = site + (enzyme, )
+                site = site + (enzyme,)
                 indices.append(site)
         indices.sort()
     return indices
 
-# Description: if you have overlapping restriction sites, choose the first one and discard the second 
-# TODO: revise this?
 def filterSites(filtered, indices):
+    """
+    If you have overlapping restriction sites, choose the first one and discard the second 
+    TODO: revise this?
+    """
     siteCounter = 0
     while siteCounter < len(indices):
         try:
@@ -741,76 +802,100 @@ class DNA(object):
         #   TAGC..............CCTTAA
         if self.DNAclass == 'digest':
             (TL,TR,BL,BR) = SetFlags(self)
+            trExtra = self.topRightOverhang.sequence if TR else ""
+            brExtra = self.bottomRightOverhang.sequence if BR else ""
             if len(self.sequence) > 8:
-                trExtra = ''
-                brExtra = ''
-                if TR:
-                    trExtra = self.topRightOverhang.sequence
-                if BR:
-                    brExtra = self.bottomRightOverhang.sequence
-                print "\t"+self.topLeftOverhang.sequence+' '*len(self.bottomLeftOverhang.sequence)+self.sequence[:4]+'.'*3+'['+str(len(self.sequence)-8)+'bp]'+'.'*3+self.sequence[len(self.sequence)-4:]+trExtra
-                print "\t"+' '*len(self.topLeftOverhang.sequence)+'|'*4+' '*(10+len(str(len(self.sequence)-8)))+'|'*4
-                print "\t"+' '*len(self.topLeftOverhang.sequence)+self.bottomLeftOverhang.sequence+Complement(self.sequence[:4])+'.'*(10+len(str(len(self.sequence)-8)))+Complement(self.sequence[len(self.sequence)-4:])+brExtra
+                print("\t"+self.topLeftOverhang.sequence+
+                      " "*len(self.bottomLeftOverhang.sequence)+
+                      self.sequence[:4]+"."*3+
+                      "["+str(len(self.sequence)-8)+"bp]"+
+                      "."*3+self.sequence[-4:]+trExtra)
+                print("\t"+" "*len(self.topLeftOverhang.sequence)+
+                      '|'*4+' '*(10+len(str(len(self.sequence)-8)))+'|'*4)
+                print("\t"+" "*len(self.topLeftOverhang.sequence)+
+                      self.bottomLeftOverhang.sequence+
+                      Complement(self.sequence[:4])+
+                      "."*(10 + len(str(len(self.sequence)-8)))+
+                      Complement(self.sequence[-4:])+brExtra)
             else:
-                trExtra = ''
-                brExtra = ''
-                if TR:
-                    trExtra = self.topRightOverhang.sequence
-                if BR:
-                    brExtra = self.bottomRightOverhang.sequence
-                print "\t"+self.topLeftOverhang.sequence+' '*len(self.bottomLeftOverhang.sequence)+self.sequence+trExtra
-                print "\t"+' '*len(self.topLeftOverhang.sequence)+'|'*len(self.sequence)
-                print "\t"+' '*len(self.topLeftOverhang.sequence)+self.bottomLeftOverhang.sequence+Complement(self.sequence)+brExtra
+                print("\t"+self.topLeftOverhang.sequence+
+                      " "*len(self.bottomLeftOverhang.sequence)+self.sequence+
+                      trExtra)
+                print("\t"+" "*len(self.topLeftOverhang.sequence)+
+                      "|"*len(self.sequence))
+                print("\t"+" "*len(self.topLeftOverhang.sequence)+
+                      self.bottomLeftOverhang.sequence+
+                      Complement(self.sequence)+brExtra)
         else:
             if len(self.sequence) > 8:
-                print "\t"+self.sequence[:4]+'.'*3+'['+str(len(self.sequence)-8)+'bp]'+'.'*3+self.sequence[len(self.sequence)-4:]
-                print "\t"+'|'*4+' '*(10+len(str(len(self.sequence)-8)))+'|'*4
-                print "\t"+Complement(self.sequence[:4])+'.'*(10+len(str(len(self.sequence)-8)))+Complement(self.sequence[len(self.sequence)-4:])
+                print("\t"+self.sequence[:4]+
+                      "."*3+"["+str(len(self.sequence)-8)+"bp]"+
+                      "."*3+self.sequence[-4:])
+                print("\t"+"|"*4+
+                      " "*(10+len(str(len(self.sequence)-8)))+"|"*4)
+                print("\t"+Complement(self.sequence[:4])+
+                      "."*(10+len(str(len(self.sequence)-8)))+
+                      Complement(self.sequence[-4:]))
             else:
-                print "\t"+self.sequence
-                print "\t"+'|'*len(self.sequence)
-                print "\t"+Complement(self.sequence)
+                print("\t"+self.sequence)
+                print("\t"+"|"*len(self.sequence))
+                print("\t"+Complement(self.sequence))
         return 0
 
-# Description: BaseExpand() for regex generation, taken from BioPython
 def BaseExpand(base):
-        """BaseExpand(base) -> string.
-    given a degenerated base, returns its meaning in IUPAC alphabet. 
-    i.e:
-                b= 'A' -> 'A'
-                b= 'N' -> 'ACGT'
-                etc..."""
-        base = base.upper()
-        return dna_alphabet[base]
+    """
+    BaseExpand(base) -> string.
+    Given a degenerated base, return its meaning in IUPAC alphabet.
+    e.g.:
+            b= 'A' -> 'A'
+            b= 'N' -> 'ACGT'
+            etc...
 
-# Description: regex() function to convert recog site into regex, from Biopython
+    ### REVIEWER NOTE: is this comment in the right spot? ###
+    for regex generation, taken from BioPython
+    """
+    base = base.upper()
+    return dna_alphabet[base]
+
 def regex(site):
-        """regex(site) -> string.
+    """
+    regex(site) -> string.
     Construct a regular expression from a DNA sequence.
-        i.e.:
-                site = 'ABCGN'   -> 'A[CGT]CG.'"""
-        reg_ex = site
-        for base in reg_ex:
-                if base in ('A', 'T', 'C', 'G', 'a', 'c', 'g', 't'):
-                        pass
-                if base in ('N', 'n'):
-                        reg_ex = '.'.join(reg_ex.split('N'))
-                        reg_ex = '.'.join(reg_ex.split('n'))
-                if base in ('R', 'Y', 'W', 'M', 'S', 'K', 'H', 'D', 'B', 'V'):
-                        expand = '['+ str(BaseExpand(base))+']'
-                        reg_ex = expand.join(reg_ex.split(base))
-        return reg_ex
+    e.g.:
+        site = 'ABCGN' -> 'A[CGT]CG.'
 
-# Description: ToRegex() function to convert recog site into regex, from Biopython
+    ### REVIEWER NOTE: is this comment in the right spot? ###
+    function to convert recog site into regex, from Biopython
+    """
+    reg_ex = site
+    for base in reg_ex:
+        ### REVIEWER NOTE: is this if statement needed? ###
+        #if base in ('A', 'T', 'C', 'G', 'a', 'c', 'g', 't'):
+        #    pass
+        if base in {'N', 'n'}:
+            reg_ex = '.'.join(reg_ex.split('N'))
+            reg_ex = '.'.join(reg_ex.split('n'))
+        if base in {'R', 'Y', 'W', 'M', 'S', 'K', 'H', 'D', 'B', 'V'}:
+            expand = '['+ str(BaseExpand(base))+']'
+            reg_ex = expand.join(reg_ex.split(base))
+    return reg_ex
+
 def ToRegex(site, name):
+    """
+    ToRegex() function to convert recog site into regex, from Biopython
+    """
     sense = ''.join(['(?P<', name, '>', regex(site.upper()), ')'])
     antisense = ''.join(['(?P<', name, '_as>', regex( reverseComplement( site.upper() )), ')'])
     rg = sense + '|' + antisense
     return rg  
 
-# Description: restrictionEnzyme class encapsulates information about buffers, overhangs, incubation / inactivation, end distance, etc.
 class restrictionEnzyme(object):
-    def __init__(self,name="", buffer1="", buffer2="", buffer3="", buffer4="", bufferecori="", heatinact="", incubatetemp="", recognitionsite="",distance=""):
+    """
+    restrictionEnzyme class encapsulates information about buffers, overhangs, incubation / inactivation, end distance, etc.
+    """
+    def __init__(self, name="", buffer1="", buffer2="", buffer3="", buffer4="",
+                 bufferecori="", heatinact="", incubatetemp="",
+                 recognitionsite="",distance=""):
         self.name = name
         self.buffer_activity =[buffer1, buffer2, buffer3, buffer4, bufferecori]
         self.inactivate_temp = heatinact
@@ -838,10 +923,13 @@ class restrictionEnzyme(object):
         for m in p.finditer(recognitionsite):
             if not_completed:
                 self.top_strand_offset = int(m.start())
-                self.bottom_strand_offset =  len(recognitionsite) - 1 - self.top_strand_offset  
+                self.bottom_strand_offset = (len(recognitionsite) - 1 -
+                                             self.top_strand_offset)
   
     def prettyPrint(self):
-        print "Name: ", self.name, "Recognition Site: ", self.recognition_site
+        print("Name: " + self.name +
+              " Recognition Site: " + self.recognition_site)
+
     def find_sites(self, DNA):
         seq = DNA.sequence
         (fwd, rev) = self.compsite.split('|')
@@ -849,10 +937,9 @@ class restrictionEnzyme(object):
         rev_rease_re = re.compile(rev)
         indices = []
         seen = {}
+        searchSequence = seq.upper()
         if DNA.topology == "circular":
-            searchSequence = seq.upper() + seq[0:len(self.recognition_site)-2]
-        else:
-            searchSequence = seq.upper()
+            searchSequence += seq[:len(self.recognition_site)-2]
         for m in fwd_rease_re.finditer(searchSequence):
             span = m.span()
             span = (span[0] % len(seq), span[1] % len(seq))
@@ -863,32 +950,39 @@ class restrictionEnzyme(object):
             span = m.span()
             try:
                 seen[span[0]]
+            ### REVIEWER NOTE: what sort of exception do you expect? ###
             except:
                 span = span + ('antisense',)
-                indices.append(span)  
+                indices.append(span)
         return indices
 
-# Description: phosphorylates 5' end of DNA molecule, allowing blunt end ligation
-# see http://openwetware.org/wiki/PNK_Treatment_of_DNA_Ends
 def TreatPNK(inputDNAs):
+    """
+    phosphorylates 5' end of DNA molecule, allowing blunt end ligation
+    see http://openwetware.org/wiki/PNK_Treatment_of_DNA_Ends
+    """
     for inputDNA in inputDNAs:
         inputDNA.phosphorylate()
     return inputDNAs
 
-# Description: DigestBuffer() function finds the optimal digestBuffer
-# todo: If Buffer 2 > 150, return Buffer 2 and list of activity values, else, return buffer 1, 3, or 4 (ignore EcoRI)
-# return format will be list, [rec_buff, [buff1_act, buff2_act...buff4_Act]]
 def DigestBuffer(*str_or_list):
+    """
+    Find the optimal digestBuffer
+    return format will be list, [rec_buff, [buff1_act, buff2_act...buff4_Act]]
+
+    TODO: If Buffer 2 > 150, return Buffer 2 and list of activity values, else, return buffer 1, 3, or 4 (ignore EcoRI)
+    """
     best_buff = ""
-    best_buff_score = [0,0,0,0,0]
+    best_buff_score = 5*[0]
     enzdic = EnzymeDictionary()
     num_enz = 0
     for e in str_or_list:
         enz = enzdic[e]
-        best_buff_score = list(x + int(y) for x, y in zip(best_buff_score, enz.buffer_activity))
-        num_enz = num_enz + 1
+        best_buff_score = list(x + int(y) for x, y in
+                               zip(best_buff_score, enz.buffer_activity))
+        num_enz += 1
     ret = []  
-    if best_buff_score[1] >( 75 * num_enz):
+    if best_buff_score[1] > (75 * num_enz):
         ret.append(2)
         ret.append(best_buff_score)
     else:
@@ -898,37 +992,63 @@ def DigestBuffer(*str_or_list):
         ret.append(best_buff_score)
     return ret
 
-#accepts two primers and list of input template DNAs
-#todo:implement this with PCR!
 def SOERoundTwo(primer1, primer2, templates):
+    """
+    accepts two primers and list of input template DNAs
+
+    TODO: implement this with PCR!
+    """
     return 0
 
 def SOE(list_of_primers, templates):
-    #assume primers are in the right order  outer  inner_rev  inner_fwd   outer
-    #call two pcrs with list[0], [1] and list[2], [3]
+    """
+    Assumes primers are in the right order:
+        outer, inner_rev, inner_fwd, outer
+
+    call two pcrs with list[0], [1] and list[2], [3]
+    """
     return 0
 
 def Primers(product, template):
     return rPrimers(product, template, 0)
 
 def rPrimers(product, template, baseCase):
-    # Annealing region design criteria:
-    # TODO: incorporate these somehow
-    # In general, the 3' base of your oligos should be a G or C
-    # The overall G/C content of your annealing region should be between 50 and 65%
-    # The overall base composition of the sequences should be balanced (no missing bases, no excesses of one particular base)
-    # The length of your sequence can be modified to be around 18 and 25 bp
-    # The sequence should appear random. There shouldn't be long stretches of a single base, or large regions of G/C rich sequence and all A/T in other regions
-    # There should be little secondary structure. Ideally the Tm for the oligo should be under 40 degrees. 
+    """
+    Annealing region design criteria:
+    TODO: incorporate these somehow
+    In general, the 3' base of your oligos should be a G or C.
+
+    The overall G/C content of your annealing region should be between
+    50 and 65%.
+
+    The overall base composition of the sequences should be balanced (no
+    missing bases, no excesses of one particular base).
+
+    The length of your sequence can be modified to be around 18 and 25 bp.
+
+    The sequence should appear random. There shouldn't be long stretches
+    of a single base, or large regions of G/C rich sequence and all A/T
+    in other regions.
+
+    There should be little secondary structure. Ideally, the Tm for the
+    oligo should be under 40 degrees.
+    """
     try:
         # Die after 2 rounds of recursion
         if baseCase == 2:
             return ()
         # Compute "forward" and "backwards" LCS (i.e. on both sides of a mutation)
-        fwdMatch = LCS(template.sequence.upper()+'$', product.sequence.upper())
-        (fwdMatchCount, forwardMatchIndicesTuple, forwardPrimerStub) = fwdMatch.LCSasRegex(template.sequence.upper()+'$', product.sequence.upper(), 1)  
-        revMatch = LCS(reverse(template.sequence.upper())+'$', reverse(product.sequence.upper()))
-        (revMatchCount, reverseMatchIndicesTuple, revPrimerStub) = revMatch.LCSasRegex(reverse(template.sequence.upper())+'$', reverse(product.sequence.upper()), 1)  
+        fwdMatch = LCS(template.sequence.upper()+"$", product.sequence.upper())
+        (fwdMatchCount, forwardMatchIndicesTuple,
+         forwardPrimerStub) = fwdMatch.LCSasRegex(template.sequence.upper()+"$",
+                                                  product.sequence.upper(), 1)
+
+
+        revMatch = LCS(reverse(template.sequence.upper())+"$",
+                               reverse(product.sequence.upper()))
+        (revMatchCount, reverseMatchIndicesTuple,
+         revPrimerStub) = revMatch.LCSasRegex(reverse(template.sequence.upper())+"$",
+                                              reverse(product.sequence.upper()), 1)
         fFlag = False
         if not len(forwardMatchIndicesTuple):
             fMI = (len(product.sequence), len(product.sequence))
@@ -938,6 +1058,7 @@ def rPrimers(product, template, baseCase):
         if not len(reverseMatchIndicesTuple):
             if fFlag:
                 # neither side matches
+                ### REVIEWER NOTE: This exception is caught later, so this message is completely invisible ###
                 raise Exception('For primer design, no detectable homology on terminal ends of product and template sequences.')
             rMI = (0, 0)
         else:
@@ -958,16 +1079,23 @@ def rPrimers(product, template, baseCase):
         # if it amplifies up ok, then return the primers
         return primers
     # may be misaligned ==> realign and recurse
+
+
+    ### REVIEWER NOTE: uh, regarding this try-except statement... ###
     except:
         baseCase += 1
         # If you had an LCS on the fwd direction, re-align using that one
         if fwdMatchCount:
             myLCS = product.sequence[forwardMatchIndicesTuple[0]:forwardMatchIndicesTuple[1]]
-            newProduct = DNA('plasmid', product.name, product.sequence[forwardMatchIndicesTuple[0]:] + product.sequence[:forwardMatchIndicesTuple[0]])
+            newProduct = DNA("plasmid", product.name,
+                             product.sequence[forwardMatchIndicesTuple[0]:] +
+                             product.sequence[:forwardMatchIndicesTuple[0]])
             match = re.search(myLCS.upper(), template.sequence.upper())
             if match:
                 startSite = match.start()
-                newTemplate = DNA('plasmid', template.name, template.sequence[startSite:]+template.sequence[:startSite])
+                newTemplate = DNA("plasmid", template.name,
+                                  template.sequence[startSite:]+
+                                  template.sequence[:startSite])
             else:
                 return ()  
         # If you had an LCS in the rev direction, re-align using that one
@@ -975,11 +1103,15 @@ def rPrimers(product, template, baseCase):
             myLCS = reverse(reverse(product.sequence)[reverseMatchIndicesTuple[0]:reverseMatchIndicesTuple[1]])
             myMatch = re.search(myLCS.upper(), product.sequence.upper())
             startIndex = myMatch.start()
-            newProduct = DNA('plasmid', product.name, product.sequence[startIndex:] + product.sequence[:startIndex])
+            newProduct = DNA("plasmid", product.name,
+                             product.sequence[startIndex:] +
+                             product.sequence[:startIndex])
             match = re.search(myLCS.upper(), template.sequence.upper())
             if match:
                 startSite = match.start()
-                newTemplate = DNA('plasmid', template.name, template.sequence[startSite:]+template.sequence[:startSite])
+                newTemplate = DNA("plasmid", template.name,
+                                  template.sequence[startSite:]+
+                                  template.sequence[:startSite])
             else:
                 return ()
         else:
@@ -997,13 +1129,14 @@ def getAnnealingRegion(template, fwd):
             break
     return currentRegion
 
-#given a parent plasmid and a desired product plasmid, design the eipcr primers
-#use difflib to figure out where the differences are
-#if there is a convenient restriction site in or near the modification, use that
-# otherwise, check if there exists bseRI or bsaI sites, and design primers using those
-# print/return warning if can't do this via eipcr (insert span too long)
-
 def DesignEIPCR(product, insert, diffTuple):
+    """
+    Given a parent plasmid and a desired product plasmid, design the eipcr primers
+    use difflib to figure out where the differences are
+    if there is a convenient restriction site in or near the modification, use that
+     otherwise, check if there exists bseRI or bsaI sites, and design primers using those
+     print/return warning if can't do this via eipcr (insert span too long)
+    """
     # use 60 bp to right of mutation as domain for annealing region design
     (fwdStart, fwdEnd) = (diffTuple[1], diffTuple[1]+60)
     # accounting for the wrap around case
@@ -1033,32 +1166,40 @@ def DesignEIPCR(product, insert, diffTuple):
     product.sequence[half - 2 : diffTuple[1] + 1]
     # Accounting for the == 0 case, which would otherwise send the mutagenic region to ''
     if diffTuple[1] == 0:
-      fwdPrimer = DNA('primer','fwd EIPCR '+product.name, tail + product.sequence[half - 2 :] + fwdAnneal)
+        fwdPrimer = DNA("primer", "fwd EIPCR "+product.name,
+                        tail + product.sequence[half - 2 :] + fwdAnneal)
     else:
-        fwdPrimer = DNA('primer','fwd EIPCR '+product.name, tail + product.sequence[half - 2 : diffTuple[1]] + fwdAnneal)
+        fwdPrimer = DNA("primer", "fwd EIPCR "+product.name,
+                        tail + product.sequence[half-2 : diffTuple[1]] +
+                        fwdAnneal)
     if half + 2 == 0:
-      revPrimer = DNA('primer','rev EIPCR '+product.name, tail + reverseComplement(product.sequence[ diffTuple[0] :]) + revAnneal)
+        revPrimer = DNA("primer", "rev EIPCR "+product.name,
+                        tail +
+                        reverseComplement(product.sequence[diffTuple[0]:]) +
+                        revAnneal)
     else:  
-        revPrimer = DNA('primer','rev EIPCR '+product.name, tail + reverseComplement(product.sequence[ diffTuple[0] : half + 2]) + revAnneal)
+        revPrimer = DNA("primer", "rev EIPCR "+product.name,
+                        tail +
+                        reverseComplement(product.sequence[diffTuple[0] : half+2]) +
+                        revAnneal)
     return fwdPrimer, revPrimer
 
 # TODO: Implement this, along with restriction site checking?
 def DesignWobble(parent, product):
     return 0
 
-def Distinguish2DNABands(a, b):
-                #case of 2
-    #for a standard 1-2% agarose gel,
-                #we can distinguish a and b if
-    #do the following in wolframalpha:  LogLogPlot[|a - b| > (0.208*a+42), {a, 0, 9000}, {b, 0, 9000}]
-                return ( abs(a.length - b.length) > (0.208*a.length+42))  & (min(a.length, b.length) > 250 )
+### REVIEWER NOTE: please double-check this re-write of the "Distinguish*" functions ###
+def DistinguishDNABands(dna_list):
+    """
+    Return True if every DNA band is distinguishable.
 
-#only returns True if can distinguish between all of the DNA bands
-def DistinguishDNABands(list_of_dnas):
-    ret_val = True
-    for i in range(len(list_of_dnas)-1):
-        ret_val = ret_val & Distinguish2DNABands(list_of_dnas[i], list_of_dnas[i+1])
-    return ret_val
+    For a standard 1-2% agarose gel, we can distinguish a and b if do
+    the following in wolframalpha:
+        LogLogPlot[|a - b| > (0.208*a+42), {a, 0, 9000}, {b, 0, 9000}]
+    """
+    sorted_list = sorted(dna_list, key=lambda dna:dna.length)
+    iter = map(len, with_prev(sorted_list))
+    return all(b - a > 0.208 * b + 42 for a, b in iter)
 
 def FindDistinguishingEnzyme(list_of_dnas):
     #find the REase that can distinguish between the input DNAs
@@ -1089,16 +1230,11 @@ def FindDistEnz():
 
 # Description: SetFlags() returns overhang information about a DNA() digest object
 def SetFlags(frag):
-    (TL,TR,BL,BR) = (0,0,0,0)
-    if frag.topLeftOverhang.sequence != '':
-        TL = 1
-    if frag.topRightOverhang.sequence != '':
-        TR = 1
-    if frag.bottomLeftOverhang.sequence != '':
-        BL = 1
-    if frag.bottomRightOverhang.sequence != '':
-        BR = 1
-    return (TL,TR,BL,BR)
+    seqs = (frag.topLeftOverhang.sequence,
+            frag.topRightOverhang.sequence,
+            frag.bottomLeftOverhang.sequence,
+            frag.bottomRightOverhang.sequence)
+    return tuple(lreduce(map, (seqs, bool, int)))
 
 def ligatePostProcessing(ligated, childrenTuple, message):
     ligated.setChildren(childrenTuple)
@@ -1110,18 +1246,16 @@ def ligatePostProcessing(ligated, childrenTuple, message):
     return ligated
 
 def isComplementary(seq1, seq2):
-    if seq1 == '' or seq2 == '':
+    if not seq1 or not seq2: # if one of them is empty
         return False
-    elif seq1 == Complement(seq2):
-        return True
-    return False
+    else:
+        return seq1 == Complement(seq2)
 
 def isReverseComplementary(seq1, seq2):
-    if seq1 == '' or seq2 == '':
+    if not seq1 or not seq2:
         return False
-    elif seq1 == reverseComplement(seq2):
-        return True
-    return False
+    else:
+        return seq1 == reverseComplement(seq2)
 
 # Description: Ligate() function accepts a list of DNA() digest objects, and outputs list of DNA
 def Ligate(inputDNAs):
@@ -1129,22 +1263,25 @@ def Ligate(inputDNAs):
     # self ligation
     for fragment in inputDNAs:
         if not isinstance(fragment, DNA):
-            print '\n*Ligate Error*: Ligate function was passed a non-DNA argument. Argument discarded.\n'
+            print("\n*Ligate Error*: Ligate function was passed a non-DNA "
+                  "argument. Argument discarded.\n")
             continue
         (TL,TR,BL,BR) = SetFlags(fragment)
         if fragment.DNAclass == 'plasmid':
-            print '\n*Ligate Warning*: for ligation reaction, invalid input molecule removed -- ligation input DNA objects must be of class \'digest\' or be PNK treated linear molecules.\n'
+            print("\n*Ligate Warning*: for ligation reaction, invalid input "
+                  "molecule removed -- ligation input DNA objects must be of "
+                  "class \"digest\" or be PNK treated linear molecules.\n")
         elif TL+TR+BL+BR == 1:
             pass
         elif TL+TR+BL+BR == 0:
             # blunt end self ligation case --> need to identify that both sides were digested (i.e. both ecoRV blunt ends)
             # and then return circular product of same sequence.
             pass
-        elif fragment.topLeftOverhang.sequence != '':
+        elif fragment.topLeftOverhang.sequence:
             if isComplementary(fragment.topLeftOverhang.sequence.lower(), fragment.bottomRightOverhang.sequence.lower()):
                 ligated = DNA('plasmid',fragment.name+' self-ligation',fragment.topLeftOverhang.sequence+fragment.sequence)
                 products.append(ligatePostProcessing(ligated, (fragment, ), 'Self-ligate ('+fragment.name+') with DNA ligase for 30 minutes at room-temperature.'))
-        elif fragment.bottomLeftOverhang.sequence != '':
+        elif fragment.bottomLeftOverhang.sequence:
             if isComplementary(fragment.topLeftOverhang.sequence.lower(), fragment.topRightOverhang.sequence.lower()):
                 ligated = DNA('plasmid',fragment.name+' self-ligation',fragment.sequence+fragment.topRightOverhang.sequence)
                 products.append(ligatePostProcessing(ligated, (fragment, ), 'Self-ligate ('+fragment.name+') with DNA ligase for 30 minutes at room-temperature.'))
@@ -1154,11 +1291,12 @@ def Ligate(inputDNAs):
     while i < len(inputDNAs):
         fragOne = inputDNAs[i]
         if not isinstance(fragOne, DNA):
-            print '\n*Ligate Warning*: Ligate function was passed a non-DNA argument. Argument discarded.\n'
+            print("\n*Ligate Warning*: Ligate function was passed a non-DNA "
+                  "argument. Argument discarded.\n")
             i += 1
             continue
         elif fragOne.DNAclass == 'plasmid':
-            i += 1            
+            i += 1
             continue
         j = i + 1
         while j < len(inputDNAs):
@@ -1289,23 +1427,24 @@ def ZymoPurify(inputDNAs):
     counter = 0
     for zymoInput in inputDNAs:
         if not isinstance(zymoInput, DNA):
-            print '\n*Zymo Warning*: Zymo purification function was passed a non-DNA argument. Argument discarded.\n'
+            print("\n*Zymo Warning*: Zymo purification function was passed a "
+                  "non-DNA argument. Argument discarded.\n")
             inputDNAs.pop(counter)
         else:
             counter += 1
-    if len(inputDNAs) == 0:
-        raise Exception('*Zymo Error*: Zymo purification function passed empty input list.')
+    if not inputDNAs:
+        raise Exception("*Zymo Error*: Zymo purification function passed empty input list.")
         return inputDNAs
     (outputBands, sizeTuples) = ([], [])
     for DNA in inputDNAs:
-        sizeTuples.append((len(DNA.sequence),DNA))
+        sizeTuples.append((len(DNA.sequence), DNA))
     sizeTuples.sort(reverse=True)
     currentTuple = sizeTuples[0]
     currentSize = currentTuple[0]
     while currentSize > 300:
         band = currentTuple[1]
         outputBands.append(cleanupPostProcessing(band,'standard zymo'))
-        if len(sizeTuples) > 0:
+        if sizeTuples:
             sizeTuples.pop(0)
             currentTuple = sizeTuples[0]
             currentSize = currentTuple[0]
@@ -1316,7 +1455,8 @@ def ZymoPurify(inputDNAs):
 # Description: ShortFragmentCleanup() function takes a list of DNA objects and filters out < 50 bp DNA's
 def ShortFragmentCleanup(inputDNAs):
     if len(inputDNAs) == 0:
-        raise Exception('*Short Fragment Cleanup Error*: short fragment cleanup function passed empty input list.')
+        raise Exception("*Short Fragment Cleanup Error*: short fragment "
+                        "cleanup function passed empty input list.")
         return inputDNAs
     outputBands = []
     sizeTuples = []
@@ -1361,25 +1501,29 @@ def GelAndZymoPurify(inputDNAs, strategy):
                 n += 1
                 currentTuple = sizeTuples[n]
                 currentSize = currentTuple[0]
-            if currentSize > largestSize * 5/6:
+            if currentSize > largestSize * 5/6: ### REVIEWER NOTE: int/int division ###
                 if currentSize < 50:
                     lostFlag = True
                 elif currentSize < 300:
                     shortFlag = True
                 interBands.append(currentTuple[1])
             if len(interBands) > 1:
-                print '\n*Gel Purification Warning*: large fragment purification resulted in purification of multiple, possibly unintended distinct DNAs.\n'
+                print("\n*Gel Purification Warning*: large fragment "
+                      "purification resulted in purification of multiple, "
+                      "possibly unintended distinct DNAs.\n")
         elif strategy == 'S':
             sizeTuples.sort()
             n = 0
             currentTuple = sizeTuples[n]
             smallestSize = currentTuple[n]
             currentSize = smallestSize
+            ### REVIEWER NOTE: int/int division ###
             while currentSize < smallestSize * 5/6 and n < len(sizeTuples) - 1:
                 interBands.append(currentTuple[1])
                 n = n + 1
                 currentTuple = sizeTuples[n]
                 currentSize = currentTuple[0]
+            ### REVIEWER NOTE: int/int division ###
             if currentSize > smallestSize * 5/6:
                 if currentSize < 50:
                     lostFlag = True
@@ -1387,43 +1531,60 @@ def GelAndZymoPurify(inputDNAs, strategy):
                     shortFlag = True
                 interBands.append(currentTuple[1])
             if len(interBands) > 1:
-                print '\n*Gel Purification Warning*: small fragment purification resulted in purification of multiple, possibly unintended distinct DNAs.\n'
-    elif isinstance( strategy, ( int, long ) ):
+                print("\n*Gel Purification Warning*: small fragment "
+                      "purification resulted in purification of multiple, "
+                      "possibly unintended distinct DNAs.\n")
+    ### REVIEWER NOTE: should compare against numbers.Integral (an ABC), ###
+    ###                but it's not in Py2.5; Py3 doesn't have `long` type ###
+    elif isinstance(strategy, int):
         sizeTuples.sort(reverse=True)
         currentTuple = sizeTuples[0]
         currentSize = currentTuple[0]
+        ### REVIEWER NOTE: int/int division ###
         while currentSize > strategy * 6/5 and len(sizeTuples) > 1:
             sizeTuples.pop(0)
             currentTuple = sizeTuples[0]
             currentSize = currentTuple[0]
+        ### REVIEWER NOTE: int/int division ###
         while currentSize > strategy * 5/6 and len(sizeTuples) > 1:
             band = sizeTuples.pop(0)
             interBands.append(band[1])
             currentTuple = sizeTuples[0]
             currentSize = currentTuple[0]
+        ### REVIEWER NOTE: int/int division ###
         if currentSize > strategy * 5/6:
             if currentSize < 50:
                 lostFlag = True
             elif currentSize < 300:
                 shortFlag = True
             interBands.append(currentTuple[1])
-        if len(interBands) == 0:
+        if not interBands:
             raise Exception('*Gel Purification Error*: for gel purification with strategy \'"+strategy+"\', no digest bands present in given range, with purification yielding zero DNA products.')
         elif len(interBands) > 1:
-            print '\n*Gel Purification Warning*: fragment purification in range of band size '"+str(strategy)+"' resulted in purification of multiple, possibly unintended distinct DNAs.\n'
+            print("\n*Gel Purification Warning*: fragment purification in "
+                  "range of band size \""+str(strategy)+"\" resulted in "
+                  "purification of multiple, possibly unintended distinct DNAs"
+                  ".\n")
     else:
         raise Exception('*Gel Purification Error*: invalid cleanup strategy argument. Valid arguments are \'L\', \'S\', or integer size of band.')
-    if len(interBands) == 0:
+    if not interBands:
         if lostFlag:
-            print '\n*Gel Purification Warning*: purification with given strategy \'"+strategy+"\' returned short fragments (< 50 bp) that were lost. Returning empty products list.\n'
+            print("\n*Gel Purification Warning*: purification with given "
+                  "strategy \""+strategy+"\" returned short fragments "
+                  "(< 50 bp) that were lost. Returning empty products list.\n")
         raise Exception('*Gel Purification Error*: purification with given strategy "'+strategy+'" yielded zero products.')
     else:
         if lostFlag:
-            print '\n*Gel Purification Warning*: purification with given strategy "'+strategy+'" returned at least one short fragment (< 50 bp) that was lost. Returning remaining products.\n'
+            print("\n*Gel Purification Warning*: purification with given "
+                  "strategy \""+strategy+"\" returned at least one short "
+                  "fragment (< 50 bp) that was lost. Returning remaining "
+                  "products.\n")
             for band in interBands:
                 outputBands.append(cleanupPostProcessing(band,'gel extraction and zymo'))
         elif shortFlag:
-            print '\n*Gel Purification Warning*: purification with given strategy "'+strategy+'" yielded short fragments (< 300 bp). Returning short fragment cleanup products.\n'
+            print("\n*Gel Purification Warning*: purification with given "
+                  "strategy \""+strategy+"\" yielded short fragments "
+                  "(< 300 bp). Returning short fragment cleanup products.\n")
             for band in interBands:
                 outputBands.append(cleanupPostProcessing(band,'gel extraction and short fragment'))
         else:
@@ -1438,42 +1599,48 @@ def linLigate(inputDNAs):
     # self ligation
     for fragment in inputDNAs:
         if not isinstance(fragment, DNA):
-            print '\n*Ligate Warning*: Ligate function was passed a non-DNA argument. Argument discarded.\n'
+            print("\n*Ligate Warning*: Ligate function was passed a non-DNA "
+                  "argument. Argument discarded.\n")
             continue
         (TL,TR,BL,BR) = SetFlags(fragment)
         if fragment.DNAclass != 'digest':
-            print '\n*Ligate Warning*: for ligation reaction, invalid input molecule removed -- ligation input DNA objects must be of class \'digest\'.\n'
+            print("\n*Ligate Warning*: for ligation reaction, invalid input "
+                  "molecule removed -- ligation input DNA objects must be of "
+                  "class \"digest\".\n")
         elif TL+TR+BL+BR == 1:
             pass
         elif TL+TR+BL+BR == 0:
             # blunt end self ligation case --> need to identify that both sides were digested (i.e. both ecoRV blunt ends)
             # and then return circular product of same sequence.
             pass
-        elif fragment.topLeftOverhang.sequence != '':
+        elif fragment.topLeftOverhang.sequence:
             if isComplementary(fragment.topLeftOverhang.sequence.lower(), fragment.bottomRightOverhang.sequence.lower()):
                 ligated = DNA('plasmid',fragment.name+' self-ligation',fragment.topLeftOverhang.sequence+fragment.sequence)
                 products.append(ligatePostProcessing(ligated, (fragment, ), 'Self-ligate ('+fragment.name+') with DNA ligase for 30 minutes at room-temperature.'))
-        elif fragment.bottomLeftOverhang.sequence != '':
+        elif fragment.bottomLeftOverhang.sequence:
             if isComplementary(fragment.topLeftOverhang.sequence.lower(), fragment.topRightOverhang.sequence.lower()):
                 ligated = DNA('plasmid',fragment.name+' self-ligation',fragment.sequence+fragment.topRightOverhang.sequence)
                 products.append(ligatePostProcessing(ligated, (fragment, ), 'Self-ligate ('+fragment.name+') with DNA ligase for 30 minutes at room-temperature.'))
-    if len(products) > 0 or len(inputDNAs) == 1:
+    if products or len(inputDNAs) == 1:
         return products
     i = 0
     while i < len(inputDNAs):
         fragOne = inputDNAs[i]
         if not isinstance(fragOne, DNA):
-            print '\n*Ligate Warning*: Ligate function was passed a non-DNA argument. Argument discarded.\n'
+            print("\n*Ligate Warning*: Ligate function was passed a non-DNA "
+                  "argument. Argument discarded.\n")
             i += 1
             continue
         j = i + 1
         while j < len(inputDNAs):
             fragTwo = inputDNAs[j]
-            if not isinstance(fragOne, DNA) or not isinstance(fragTwo, DNA):
-                print '\n*Ligate Warning*: Ligate function was passed a non-DNA argument. Argument discarded.\n'
+            if not all(isinstance(frag, DNA) for frag in (fragOne, fragTwo)):
+                print("\n*Ligate Warning*: Ligate function was passed a "
+                      "non-DNA argument. Argument discarded.\n")
                 j += 1
                 continue
-            elif fragOne.DNAclass != 'digest' or fragTwo.DNAclass != 'digest':
+            elif not all(frag.DNAclass == "digest"
+                         for frag in (fragOne, fragTwo)):
                 j += 1                
                 continue
             (LTL,LTR,LBL,LBR) = SetFlags(fragOne)
@@ -1689,14 +1856,15 @@ def GoldenGate(VectorPlasmid, InputDNAs, reASE, resistanceList):
         raise Exception('For GoldenGate function, no viable vector input provided (must contain origin of replication).')
     for ggDNA in InputDNAs:
         if ggDNA.DNAclass != 'plasmid':
-            print '\n*GoldenGate Warning*: linear inputs disallowed.\n'
+            print("\n*GoldenGate Warning*: linear inputs disallowed.\n")
             continue
         try:
             ggDigest = Digest(ggDNA, (reASE, ))
             ggDNAs += ggDigest
+        ### REVIEWER NOTE: blanket except statement ###
         except:
             pass
-    ggLigation = rGoldenGate(vector, [0, ], ggDNAs)
+    ggLigation = rGoldenGate(vector, [0], ggDNAs)
   
   # for a ligation product to be part of the gg output, it must fulfill three criteria:
     # 1) It must be circular (handled by Ligate() function)
@@ -1704,10 +1872,11 @@ def GoldenGate(VectorPlasmid, InputDNAs, reASE, resistanceList):
     # 3) It must have all of the above specified resistance markers
 
     for product in ggLigation:
-        if product == None:
+        if product is None:
             continue
-        if len(HasReplicon(product.sequence)) > 0:
-            resistanceFlag, resistanceMarkers = 1, map(str.lower, HasResistance(product.sequence))
+        if HasReplicon(product.sequence):
+            resistanceFlag = 1
+            resistanceMarkers = map(str.lower, HasResistance(product.sequence))
             for resistance in resistanceList:
                 if resistance not in resistanceMarkers:
                     resistanceFlag = 0
@@ -1717,10 +1886,7 @@ def GoldenGate(VectorPlasmid, InputDNAs, reASE, resistanceList):
     return outputDNAs
 
 def DNAlistContains(DNAlist, candidateDNA):
-    for listDNA in DNAlist:
-        if candidateDNA.isEqual(listDNA):
-            return True
-    return False
+    return any(candidateDNA.isEqual(listDNA) for listDNA in DNAlist)
 
 def rGoldenGate(currentLink, linkList, allDNAs):
     products = []
@@ -1730,10 +1896,7 @@ def rGoldenGate(currentLink, linkList, allDNAs):
         counter = 0
         for myDNA in allDNAs:
             newLink = linLigate([currentLink, myDNA])
-            if len(newLink) == 0:
-                counter += 1
-                continue
-            else:
+            if newLink:
                 for link in newLink:
                     if counter == 0:
                         return (None, )
@@ -1744,18 +1907,25 @@ def rGoldenGate(currentLink, linkList, allDNAs):
                         nextList.append(counter)
                         nextLink = link
                         futureProducts = rGoldenGate(nextLink, nextList, allDNAs)
-                        for futureProduct in futureProducts:
-                            if isinstance(futureProduct, DNA):
-                                if futureProduct.DNAclass == 'plasmid':
-                                    products.append(futureProduct)
+                        products.extend(futureProduct
+                                        for futureProduct in futureProducts
+                                        if (isinstance(futureProduct, DNA) and
+                                            futureProduct.DNAclass == "plasmid"))
+            else:
+                counter += 1
+                continue
             counter += 1
         return products
 
 # Description: HasFeature() function checks for presence of regex-encoded feature in seq
 def HasFeature(regex, seq):
     #Regex must be lower case!
-    return bool( re.search(regex, seq.lower()) ) | bool( re.search(regex, reverseComplement(seq.lower()) ) )
+    ### REVIEWER NOTE: come up with better variable names
+    a = re.search(regex, seq.lower())
+    b = re.search(regex, reverseComplement(seq.lower()))
+    return bool(a) or bool(b)
 
+### REVIEWER NOTE: put these functions (containing literal sequences) in a separate file! ###
 #####Origins Suite: Checks for presence of certain origins of replication#####
 def HasColE2(seq):
     #has ColE2 origin, data from PMID 16428404
@@ -1806,6 +1976,7 @@ def HasKanR(seq):
 def HasCmR(seq):
     regex='MEKKITGYTTVDISQWHRKEHFEAFQSVAQCTYNQTVQLDITAFLKTVKKNKHKFYPAFIHILARLMNAHPEFRMAMKDGELVIWDSVHPCYTVFHEQTETFSSLWSEYHDDFRQFLHIYSQDVACYGENLAYFPKGFIENMFFVSANPWVSFTSFDLNVANMDNFFAPVFTMGKYYTQGDKVLMPLAIQVHHAVCDGFHVGRMLNELQQYCDEWQGGA'
     return HasAAFeature(regex, seq)
+
 def HasResistance(seq):
     retval = []
     if HasCmR(seq):
@@ -1817,6 +1988,7 @@ def HasResistance(seq):
     if HasSpecR(seq):
         retval.append('SpecR')
     return retval
+
 def HasReplicon(seq):
     retval = []
     if HasColE1(seq):
@@ -1830,6 +2002,7 @@ def HasReplicon(seq):
     if HaspUC(seq):
         retval.append('pUC')
     return retval
+
 class Strain(object):
     def __init__(self, name="", replication="", resistance="", plasmid=""):
         #pass everything in as a comma separated list
@@ -1860,8 +2033,9 @@ def TransformPlateMiniprep(DNAs, strain):
             replicons = HasReplicon(dna.sequence)
             #just need one resistance not already in strain
             for resistance in resistances:
-                if not(resistance in strain.resistance):
+                if resistance not in strain.resistance:
                     newR = True
+                    ### REVIEWER NOTE: should this be "(not x) in y" or "x not in y"? ###
                     if not resistance in selectionList:
                         selectionList.append(resistance)
                     success_msg += "\nTransformation of "+dna.name+" into "+strain.name+" successful -- use "+resistance+" antibiotic selection.\n"
@@ -1876,15 +2050,18 @@ def TransformPlateMiniprep(DNAs, strain):
                     existing_plasmids.append( HasReplicon(p.sequence) )
                 if not(replicon in existing_plasmids ):
                     no_existing_plasmid = True
-            if(newR & replicon_ok & no_existing_plasmid):
+            if(newR and replicon_ok and no_existing_plasmid):
                 parent = dna.clone()
                 parent.setChildren((dna, ))
                 dna.addParent(parent)
                 parent.instructions = 'Transform '+dna.name+' into '+strain.name+', selecting for '+resistance+' resistance.'
                 parent.setTimeStep(24)
-                parent.addMaterials(['Buffers P1,P2,N3,PB,PE','Miniprep column',resistance[:-1]+' LB agar plates','LB '+resistance[:-1]+' media'])
+                parent.addMaterials(['Buffers P1,P2,N3,PB,PE',
+                                     'Miniprep column',
+                                     resistance[:-1]+' LB agar plates',
+                                     'LB '+resistance[:-1]+' media'])
                 transformed.append(dna)  
-                print success_msg
+                print(success_msg)
             else:
                 if not(newR):
                     raise Exception('*Transformation Error*: for transformation of '+dna.name+' into '+strain.name+', plasmid either doesn\'t have an antibiotic resistance or doesn\'t confer a new one on this strain')
