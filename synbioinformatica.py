@@ -150,7 +150,7 @@ class LCS:
                         # Adapted for PCR by restricting LCS matches to primer terminal 3' end
                         if len(str1)<i and r.depth>self.deepest[0] and j == len(str1) - 1:
                             self.deepest = r.depth, j-1
-                elif s.has_key(t):
+                elif t in s:
                     break
                 else:
                     r = s
