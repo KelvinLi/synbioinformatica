@@ -218,17 +218,27 @@ def PCRErrorHandling(InputTuple):
             raise Exception('*Primer error*: primer '+abbrev+' does not anneal in either orientation.')
         return matchedAlready
 
-# Description: assigns relationships for PCR inputs and PCR product for assembly tree purposes
 def pcrPostProcessing(inputTuple, parent, fwdTM, revTM):
+    """
+    Assign relationships for PCR inputs and PCR product for assembly
+    tree purposes.
+    """
     (primer1DNA, primer2DNA, templateDNA) = inputTuple
     for child in inputTuple:
         child.addParent(parent)
+    parent_kbp = len(parent.sequence)/1000.
+    thermoCycle = str(int(math.ceil(parent_kbp))) + "K" + \
+                  str(int(round(max(fwdTM, revTM))))
     parent.setChildren(inputTuple)
-    intVal = int(round(len(parent.sequence)/1000+0.5))
-    parent.setTimeStep(intVal)
-    parent.addMaterials(['Polymerase','dNTP mix','Polymerase buffer'])
-    thermoCycle = str(intVal)+'K'+str(int(round(max(fwdTM,revTM))))
-    parent.instructions = thermoCycle+' PCR template '+templateDNA.name+' with primers '+primer1DNA.name+', '+primer2DNA.name
+    parent.setTimeStep(parent_kbp)
+    parent.addMaterials(["Polymerase", "dNTP mix", "Polymerase buffer"])
+    parent.instructions = " ".join((thermoCycle,
+                                    "PCR template",
+                                    templateDNA.name,
+                                    "with primers",
+                                    primer1DNA.name,
+                                    ",",
+                                    primer2DNA.name))
     return parent
 
 # Description: PCR() function constructs generalized suffix tree for template and a given primer to identify annealing region,
