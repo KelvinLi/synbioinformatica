@@ -1450,7 +1450,7 @@ def ZymoPurify(inputDNAs):
     (outputBands, sizeTuples) = ([], [])
     for DNA in inputDNAs:
         sizeTuples.append((len(DNA.sequence), DNA))
-    sizeTuples.sort(reverse=True)
+    sizeTuples.sort(key=lambda x: x[0], reverse=True)
     currentTuple = sizeTuples[0]
     currentSize = currentTuple[0]
     while currentSize > 300:
@@ -1475,7 +1475,7 @@ def ShortFragmentCleanup(inputDNAs):
     for DNA in inputDNAs:
         fragSize = len(DNA.sequence)
         sizeTuples.append((fragSize,DNA))
-    sizeTuples.sort(reverse=True)
+    sizeTuples.sort(key=lambda x: x[0], reverse=True)
     currentTuple = sizeTuples[0]
     currentSize = currentTuple[0]
     while currentSize > 50 and len(sizeTuples) > 1:
@@ -1503,7 +1503,7 @@ def GelAndZymoPurify(inputDNAs, strategy):
         sizeTuples.append((len(DNA.sequence),DNA))
     if isinstance( strategy, str):
         if strategy == 'L':
-            sizeTuples.sort(reverse=True)
+            sizeTuples.sort(key=lambda x: x[0], reverse=True)
             n = 0
             currentTuple = sizeTuples[n]
             largestSize = currentTuple[n]
@@ -1524,7 +1524,7 @@ def GelAndZymoPurify(inputDNAs, strategy):
                       "purification resulted in purification of multiple, "
                       "possibly unintended distinct DNAs.\n")
         elif strategy == 'S':
-            sizeTuples.sort()
+            sizeTuples.sort(key=lambda x: x[0])
             n = 0
             currentTuple = sizeTuples[n]
             smallestSize = currentTuple[n]
@@ -1549,7 +1549,7 @@ def GelAndZymoPurify(inputDNAs, strategy):
     ### REVIEWER NOTE: should compare against numbers.Integral (an ABC), ###
     ###                but it's not in Py2.5; Py3 doesn't have `long` type ###
     elif isinstance(strategy, int):
-        sizeTuples.sort(reverse=True)
+        sizeTuples.sort(key=lambda x: x[0], reverse=True)
         currentTuple = sizeTuples[0]
         currentSize = currentTuple[0]
         ### REVIEWER NOTE: int/int division ###
