@@ -500,18 +500,30 @@ def getDhHash():
 
 # Description: initialize Digest function parameters and checks for acceptable input format
 def initDigest(InputDNA, Enzymes):
-    (indices, frags, sites, totalLength, enzNames, incubationTemp, nameList, filtered) = ([], [], "", len(InputDNA.sequence), '', 0, [], []) # Initialization
+    # Initialization
+    indices = []
+    frags = []
+    sites = ""
+    totalLength = len(InputDNA.sequence)
+    enzNames = ""
+    incubationTemp = 0.
+    nameList = []
+    filtered = []
+
     for enzyme in Enzymes:
         nameList.append(enzyme.name)
         enzNames = enzNames+enzyme.name+', '
-        incubationTemp = max(incubationTemp,enzyme.incubate_temp)
+        incubationTemp = max(incubationTemp, enzyme.incubate_temp)
     enzNames = enzNames[:-2]
     if len(Enzymes) > 2:
         raise Exception('*Digest error*: only double or single digests allowed (provided enzymes were '+enzNames+')')
     if InputDNA.topology == "linear":  
         # Initialize indices array with start and end indices of the linear fragment
-            # Add dummy REase to avoid null pointers
-        dummy = restrictionEnzyme("dummy", "", "", "", "", "", 0, 0, "(0/0)","")
+        # Add dummy REase to avoid null pointers
+        dummy = restrictionEnzyme(name="dummy", buffer1="", buffer2="",
+                                  buffer3="", buffer4="", bufferecori="",
+                                  heatinact=0, incubatetemp=0.,
+                                  recognitionsite="(0/0)", distance="")
         indices = [(0,0,'',dummy), (totalLength,0,'',dummy)]
     return (indices, frags, sites, totalLength, enzNames, incubationTemp, nameList, filtered)
 
@@ -671,7 +683,9 @@ def digestPostProcessing(frag, InputDNA, nameList, enzNames, incubationTemp):
         bestBuffer = 'Buffer EcoRI' 
     frag.setTimeStep(1)
     frag.addMaterials([bestBuffer,'ddH20'])
-    frag.instructions = 'Digest ('+InputDNA.name+') with '+enzNames+' at '+incubationTemp+'C in '+bestBuffer+' for 1 hour.'
+    frag.instructions = " ".join(("Digest (" + InputDNA.name + ") with",
+                                  enzNames, "at", str(incubationTemp) + "C in",
+                                  bestBuffer, "for 1 hour."))
     return frag
 
 # Description: takes in InputDNA molecule and list of EnzymeDictionary elements, outputting a list of digest products
@@ -906,12 +920,12 @@ class restrictionEnzyme(object):
     restrictionEnzyme class encapsulates information about buffers, overhangs, incubation / inactivation, end distance, etc.
     """
     def __init__(self, name="", buffer1="", buffer2="", buffer3="", buffer4="",
-                 bufferecori="", heatinact="", incubatetemp="",
-                 recognitionsite="",distance=""):
+                 bufferecori="", heatinact="", incubatetemp=0.,
+                 recognitionsite="", distance=""):
         self.name = name
         self.buffer_activity =[buffer1, buffer2, buffer3, buffer4, bufferecori]
         self.inactivate_temp = heatinact
-        self.incubate_temp = incubatetemp
+        self.incubate_temp = float(incubatetemp)
         #human-readable recognition site
         self.recognition_site = recognitionsite
         self.endDistance = distance
