@@ -505,7 +505,7 @@ def initDigest(InputDNA, Enzymes):
 
 def restrictionSearch(Enzymes, InputDNA, indices, totalLength):
     """
-    Finds restriction sites for given Enzymes in given InputDNA molecule 
+    Finds restriction sites for given Enzymes in given InputDNA molecule
     """
     for enzyme in Enzymes:
         sites = enzyme.find_sites(InputDNA)
@@ -547,7 +547,7 @@ def restrictionSearch(Enzymes, InputDNA, indices, totalLength):
 
 def filterSites(filtered, indices):
     """
-    If you have overlapping restriction sites, choose the first one and discard the second 
+    If you have overlapping restriction sites, choose the first one and discard the second
     TODO: revise this?
     """
     siteCounter = 0
