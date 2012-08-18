@@ -3,19 +3,23 @@ function EditorConstructor ()
     this.load_symbol = function (new_symbol)
     {
         commit_symbol();
-        if (!(new_symbol in symbol_values))
+        if (new_symbol === null) {
+            document.getElementById("editor_field").value = "";
+        } else if (new_symbol in symbol_values) {
+            document.getElementById("editor_field").value =
+                symbol_values[new_symbol];
+
+            dom_editor_symlist = document.getElementById("editor_symlist");
+            var ret = search_select_value(dom_editor_symlist, new_symbol);
+            if (ret == null)
+                return false;
+
+            dom_editor_symlist.selectedIndex = ret[0];
+        } else {
             return false;
-
-        document.getElementById("editor_field").value = symbol_values[new_symbol];
-
-        for (var i = 0; i < document.getElementById("editor_symlist").length; i++) {
-            if (document.getElementById("editor_symlist")[i].value === new_symbol) {
-                document.getElementById("editor_symlist").selectedIndex = i;
-                current_symbol = new_symbol;
-                return true;
-            }
         }
-        return false;
+        current_symbol = new_symbol;
+        return true;
     };
 
     this.add_symbol = function (new_symbol)
@@ -36,25 +40,17 @@ function EditorConstructor ()
     {
         if (!(old_symbol in symbol_values))
             return false;
-
         delete symbol_values[old_symbol];
         
         var dom_editor_symlist = document.getElementById("editor_symlist");
-        for (var i = 0; i < dom_editor_symlist.length; i++) {
-            var child = dom_editor_symlist[i];
-            if (child.value === old_symbol) {
-                dom_editor_symlist.removeChild(child);
+        var ret = search_select_value(dom_editor_symlist, old_symbol);
+        if (ret == null)
+            return false;
+        dom_editor_symlist.removeChild(ret[1]);
 
-                if (dom_editor_symlist.value == null ||
-                    dom_editor_symlist.value === "")
-                    document.getElementById("editor_field").value = "";
-                else
-                    this.load_symbol(dom_editor_symlist.value);
-
-                return true;
-            }
-        }
-        return false;
+        var v = dom_editor_symlist.value;
+        this.load_symbol((v === "") ? null : v);
+        return true;
     };
 
     this.symbols = function ()
@@ -70,7 +66,18 @@ function EditorConstructor ()
     function commit_symbol ()
     {
         if (current_symbol in symbol_values)
-            symbol_values[current_symbol] = document.getElementById("editor_field").value;
+            symbol_values[current_symbol] =
+                document.getElementById("editor_field").value;
+    };
+
+    function search_select_value (select_obj, target)
+    {
+        for (var i = 0; i < select_obj.length; i++) {
+            var option_obj = select_obj[i];
+            if (option_obj.value === target)
+                return [i, option_obj];
+        }
+        return null;
     };
 
     var current_symbol = null;
