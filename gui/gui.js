@@ -5,13 +5,13 @@ function init ()
     {
         var col_t = col_expand_manager.COL_T[col_t_string];
         return {
-            "onclick":
-            function () {
+            "onclick": function ()
+            {
                 col_expand_manager.toggle_expand(col_t);
             },
 
-            "onload":
-            function () {
+            "onload": function ()
+            {
                 col_expand_manager.register(col_t, this);
             },
         };
@@ -21,6 +21,33 @@ function init ()
         "console_expand": listeners_helper("CONSOLE"),
         "editor_expand": listeners_helper("EDITOR"),
         "docs_expand": listeners_helper("DOCS"),
+        "editor_symlist":
+        {
+            "onchange": function ()
+            {
+                editor.load_symbol(this.value);
+            },
+        },
+
+        "editor_newsym":
+        {
+            "onclick": function ()
+            {
+                var new_symbol = prompt("New symbol name:")
+                if (new_symbol == null || new_symbol.length <= 0)
+                    return;
+                editor.add_symbol(new_symbol);
+                editor.load_symbol(new_symbol);
+            },
+        },
+
+        "editor_delsym":
+        {
+            "onclick": function ()
+            {
+                editor.del_symbol(editor.current_symbol());
+            },
+        },
     };
 
     register_event_listeners(listeners);

@@ -2,6 +2,7 @@
 <head>
 <!-- <link rel="icon" href="" type="image/x-icon"/> -->
 <link rel="stylesheet" href="gui.css" type="text/css" />
+<script type="text/javascript" src="editor.js"></script>
 <script type="text/javascript" src="gui.js"></script>
 </head>
 
@@ -32,11 +33,9 @@
     </div>
     <div class="topbar">
         <label for="editor_symlist">Sequence:</label>
-        <select id="editor_symlist">
-            <option value="foo">foo</option>
-            <option value="eggs">eggs</option>
-        </select>
-        <button id="editor_newsym">New Sequence...</button>
+        <select id="editor_symlist"></select>
+        <button id="editor_newsym">New...</button>
+        <button id="editor_delsym">Delete</button>
     </div>
     <textarea id="editor_field" wrap="on">SEQ</textarea>
 </div>
