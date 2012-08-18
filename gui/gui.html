@@ -1,0 +1,63 @@
+<html>
+<head>
+<!-- <link rel="icon" href="" type="image/x-icon"/> -->
+<link rel="stylesheet" href="gui.css" type="text/css" />
+<script type="text/javascript" src="gui.js"></script>
+</head>
+
+<body onload="init();">
+<h1>Title</h1>
+<div class="navlinks">
+    <a href="">link 1 foo</a>
+    <a href="">link 2 bar mik tal</a>
+    <a href="">link 3</a>
+</div>
+
+<div class="col col_console">
+    <div class="topbar_right">
+        <input id="console_expand" type="button" value=">"/>
+    </div>
+    <form method="post" action="">
+        <div class="topbar">
+            <input type="submit" value="Execute"/>
+        </div>
+        <textarea id="code" name="code" wrap="off"># Default code</textarea>
+    </form>
+    <p>Output</p>
+</div>
+
+<div class="col col_editor">
+    <div class="topbar_right">
+        <input id="editor_expand" type="button" value=">"/>
+    </div>
+    <div class="topbar">
+        <label for="editor_symlist">Sequence:</label>
+        <select id="editor_symlist">
+            <option value="foo">foo</option>
+            <option value="eggs">eggs</option>
+        </select>
+        <button id="editor_newsym">New Sequence...</button>
+    </div>
+    <textarea id="editor_field" wrap="on">SEQ</textarea>
+</div>
+
+<div class="col col_docs">
+    <div class="topbar_right">
+        <input id="docs_expand" type="button" value="<"/>
+    </div>
+    <div class="topbar">
+        <input type="button" value="Docs Action 1"/>
+    </div>
+    <div class="docs_view">
+        <p>Each line in a Python docstring should not be longer than 72
+           characters.
+        </p>
+        <p>More content</p>
+        <p style="padding-top: 50%">...and yet even more</p>
+        <p style="padding-top: 50%">...and yet even more</p>
+        <p style="padding-top: 50%">...and yet even more</p>
+        <p style="padding-top: 50%">...and yet even more</p>
+    </div>
+</div>
+</body>
+</html>
